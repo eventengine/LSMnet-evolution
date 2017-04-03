@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-// import Brain from './../brain';
-import { observer } from 'mobx-react'
 import NeuronComp from './NeuronComp'
 import * as THREE from 'three';
 import { rand0to1_F, randMin1to1_F } from './../utils'

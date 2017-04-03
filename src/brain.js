@@ -1,12 +1,12 @@
 const range = require('lodash/range');
-const mean = require('lodash/mean');
-const sum = require('lodash/sum');
+// const mean = require('lodash/mean');
+// const sum = require('lodash/sum');
 const random = require('lodash/random');
 
-const activation = require('sigmoid');
+// const activation = require('sigmoid');
 import { extendObservable } from 'mobx';
 
-import { rand0to1_F, toss, randMin1to1_F } from './utils'
+import { rand0to1_F/*, toss, randMin1to1_F */} from './utils'
 
 class Organ {
   constructor () {
@@ -126,10 +126,10 @@ export default class Brain extends Organ {
   }
 
   pulse () {
-    console.log(
-      'pulse', this.age
-      // evaluate(this.neurons)
-    );
+    // console.log(
+    //   'pulse', this.age
+    //   // evaluate(this.neurons)
+    // );
     this.age++;
     if (this.age === 100) {
       this.die();
@@ -141,7 +141,7 @@ export default class Brain extends Organ {
 export class Creature extends Organ {
   constructor ({ name, inputs, outputs, startPosition }) {
     super();
-    this.name = 'Creature_';
+    this.name = 'Creature_' + name;
 
 
     extendObservable(this, {
@@ -151,7 +151,7 @@ export class Creature extends Organ {
     this.timeInputNeuron = new Neuron({
       name: name + '_timeInput',
       base: rand0to1_F(),
-      leaking: random(0.001, 0.2),
+      leaking: random(0.1, 0.2),
       threshold: random(0.3, 1.5),
     });
 
@@ -170,7 +170,7 @@ export class Creature extends Organ {
   updateTime (frame) {
     if(this.isDead) {return;}
     this.timeInputNeuron.charge(0.8);
-    if(frame >= 1000){ this.brain.die(); }
+    if(frame === 1000){ this.brain.die(); }
   }
 
   moveup () {

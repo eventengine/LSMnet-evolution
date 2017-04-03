@@ -1,35 +1,59 @@
 import React, { Component } from 'react';
-// import * as THREE from 'three';
-import { observer } from 'mobx-react'
 
 import './App.css';
 import BrainComp from './Visual/BrainComp';
 import CreatureComp from './Visual/CreatureComp';
 import World from './Visual/World';
 import { Creature } from './brain';
+import { rangeNum } from './utils';
+const range = require('lodash/range');
 
-
-const c = new Creature({name: 'cc', startPosition: [-14,-15]});
+// const c = new Creature({name: 'cc', startPosition: [-14,-15]});
+const creatures = range(10).map(i => {
+  const xpos = rangeNum(i, 0, 10, -14, 14);
+  return new Creature({ name: `c${i}`, startPosition: [xpos, -14] });
+});
 
 class App extends Component {
   constructor () {
     super();
-    this.state = { }
-  }
-  handleClick(){
-    c.updateTime();
+    this.state = { selectedCreature: creatures[6] }
+    this.handleCreatureClick = this.handleCreatureClick.bind(this);
   }
 
-  updateFrame(frameNum){
-    if(frameNum % 100 === 0) {
-      c.updateTime(frameNum);
+  handleClick () {
+    creatures.forEach(c => {
+      c.updateTime();
+    });
+  }
+
+  updateFrame (frameNum) {
+    if (frameNum % 10 === 0) {
+      creatures.forEach(c => {
+        // c.updateTime(frameNum);
+      });
     }
   }
-  // componentDidMount () {
-  //   setInterval(()=>{
-  //     // c.updateTime();
-  //   },100);
-  // }
+
+  handleCreatureClick (i) {
+    this.setState({ selectedCreature: false }, ()=>{
+      this.setState({ selectedCreature: creatures[i]})
+    })
+  }
+
+  renderCreatures () {
+    return creatures.map((c,i) => {
+      return <CreatureComp
+        selected={c === this.state.selectedCreature}
+        creature={c}
+        key={c.name}
+        i={i}
+        handleClick={this.handleCreatureClick}
+      />;
+    })
+  }
+
+
 
   render () {
     return (
@@ -37,12 +61,12 @@ class App extends Component {
         <button onClick={this.handleClick}>click</button>
 
         <World onAnimate={this.updateFrame}>
-          <CreatureComp creature={c}/>
-          <BrainComp brain={c.brain}/>
+          {this.renderCreatures()}
+          {this.state.selectedCreature && <BrainComp brain={this.state.selectedCreature.brain}/>}
         </World>
       </div>
     );
   }
 }
 
-export default observer(App);
+export default /*observer*/(App);
