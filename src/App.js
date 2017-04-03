@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import * as THREE from 'three';
 
 import './App.css';
 import BrainComp from './Visual/BrainComp';
@@ -31,6 +32,7 @@ class App extends Component {
       c.updateTime();
     });
   }
+  static yDestination = 10;
 
   updateFrame (frameNum) {
     if(this.end){return;}
@@ -42,12 +44,11 @@ class App extends Component {
         c.die();
       });
 
-      const yDestination = 10;
       console.log('finish generation 1');
       const sortedCreatures = creatures.sort((a,b) => {
         // a.die();
         if(
-          Math.abs(b.position[1] - yDestination) < Math.abs(a.position[1] - yDestination)
+          Math.abs(b.position[1] - App.yDestination) < Math.abs(a.position[1] - App.yDestination)
         ){ return 1 }
         return -1
       });
@@ -82,6 +83,22 @@ class App extends Component {
     })
   }
 
+  renderTopLine(){
+    return (
+      <line>
+        <geometry
+          vertices={[
+            new THREE.Vector3(-14, App.yDestination,0),
+            new THREE.Vector3(14, App.yDestination, 0),
+          ]}
+        />
+        <lineBasicMaterial
+          color={0xffffff}
+        />
+      </line>
+    )
+
+  }
 
 
   render () {
@@ -90,6 +107,7 @@ class App extends Component {
         <button onClick={this.handleClick}>click</button>
 
         <World onAnimate={this.updateFrame}>
+          {this.renderTopLine()}
           {this.renderCreatures()}
           {this.state.selectedCreature && <BrainComp brain={this.state.selectedCreature.brain}/>}
         </World>
