@@ -18,6 +18,7 @@ class App extends Component {
   constructor () {
     super();
     this.state = {
+      creatures,
       selectedCreature: creatures[6],
 
     };
@@ -26,13 +27,14 @@ class App extends Component {
   }
 
   handleClick () {
-    creatures.forEach(c => {
+    this.state.creatures.forEach(c => {
       c.updateTime();
     });
   }
 
   updateFrame (frameNum) {
     if(this.end){return;}
+    const {creatures} = this.state;
 
     if(frameNum % 500 === 0){
       this.end = true;
@@ -69,7 +71,7 @@ class App extends Component {
   }
 
   renderCreatures () {
-    return creatures.map((c,i) => {
+    return this.state.creatures.map((c,i) => {
       return <CreatureComp
         selected={c === this.state.selectedCreature}
         creature={c}
