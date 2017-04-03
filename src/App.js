@@ -7,9 +7,9 @@ import World from './Visual/World';
 import { Creature } from './brain';
 import { rangeNum } from './utils';
 const range = require('lodash/range');
+const slice = require('lodash/slice');
 
-// const c = new Creature({name: 'cc', startPosition: [-14,-15]});
-const creatures = range(10).map(i => {
+const creatures = range(12).map(i => {
   const xpos = rangeNum(i, 0, 10, -14, 14);
   return new Creature({ name: `c${i}`, startPosition: [xpos, -14] });
 });
@@ -17,7 +17,11 @@ const creatures = range(10).map(i => {
 class App extends Component {
   constructor () {
     super();
-    this.state = { selectedCreature: creatures[6] }
+    this.state = {
+      selectedCreature: creatures[6],
+
+    };
+    this.updateFrame = this.updateFrame.bind(this);
     this.handleCreatureClick = this.handleCreatureClick.bind(this);
   }
 
@@ -28,9 +32,32 @@ class App extends Component {
   }
 
   updateFrame (frameNum) {
-    if (frameNum % 10 === 0) {
+    if(this.end){return;}
+
+    if(frameNum % 500 === 0){
+      this.end = true;
+      creatures.forEach(c =>{
+        c.die();
+      });
+
+      const yDestination = 10;
+      console.log('finish generation 1');
+      const sortedCreatures = creatures.sort((a,b) => {
+        // a.die();
+        if(
+          Math.abs(b.position[1] - yDestination) < Math.abs(a.position[1] - yDestination)
+        ){ return 1 }
+        return -1
+      });
+
+      const bestCreatures = slice(sortedCreatures, 0, 3);
+      console.log(bestCreatures);
+
+
+    }
+    if (frameNum % 1 === 0) {
       creatures.forEach(c => {
-        // c.updateTime(frameNum);
+        c.updateTime(frameNum);
       });
     }
   }

@@ -87,7 +87,7 @@ class Neuron extends Organ {
 }
 
 
-const numOfNeurons = 30;
+const numOfNeurons = 5;
 
 
 export default class Brain extends Organ {
@@ -120,7 +120,7 @@ export default class Brain extends Organ {
     super.die();
     this.neurons.forEach(n => n.die());
     console.log(
-      'die: '
+      // 'die: '
     );
 
   }
@@ -170,7 +170,10 @@ export class Creature extends Organ {
   updateTime (frame) {
     if(this.isDead) {return;}
     this.timeInputNeuron.charge(0.8);
-    if(frame === 1000){ this.brain.die(); }
+    // if(frame === 1000){ this.brain.die(); }
+  }
+  die(){
+    this.brain.die();
   }
 
   moveup () {
