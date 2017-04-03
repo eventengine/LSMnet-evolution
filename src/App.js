@@ -21,7 +21,7 @@ class App extends Component {
   }
 
   updateFrame(frameNum){
-    if(frameNum % 100) {
+    if(frameNum % 100 === 0) {
       c.updateTime(frameNum);
     }
   }

@@ -170,10 +170,7 @@ export class Creature extends Organ {
   updateTime (frame) {
     if(this.isDead) {return;}
     this.timeInputNeuron.charge(0.8);
-    if(frame % 100 === 0){
-      // console.log('frame');
-    }
-    if(frame === 1000){ this.brain.die(); }
+    if(frame >= 1000){ this.brain.die(); }
   }
 
   moveup () {
