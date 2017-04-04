@@ -179,7 +179,7 @@ export class Creature extends Organ {
     this.brain.die();
   }
 
-  moveup () {
-    this.position[1] += 0.1;
+  moveup (strength) {
+    this.position[1] += strength*0.3;
   }
 }
