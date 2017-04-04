@@ -25,6 +25,7 @@ class App extends Component {
     };
     this.updateFrame = this.updateFrame.bind(this);
     this.handleCreatureClick = this.handleCreatureClick.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   handleClick () {
@@ -38,7 +39,7 @@ class App extends Component {
     if(this.end){return;}
     const {creatures} = this.state;
 
-    if(frameNum % 500 === 0){
+    if(frameNum % 5000 === 0){
       this.end = true;
       creatures.forEach(c =>{
         c.die();
