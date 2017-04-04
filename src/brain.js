@@ -22,7 +22,7 @@ class Organ {
 }
 
 class Neuron extends Organ {
-  constructor ({ base, name, threshold, leaking, cb }) {
+  constructor ({ base, name, threshold, leaking, cb, isInput }) {
     super();
 
     this.name = 'Neuron_' + name;
@@ -33,6 +33,8 @@ class Neuron extends Organ {
     this.threshold = threshold;
     this.leaking = leaking;
     this.cb = cb;
+    this.isInput = isInput;
+    this.isOutput = !!cb;
 
     extendObservable(this, { state: base, power: Neuron.minPower * 2 });
 
@@ -120,7 +122,7 @@ export default class Brain extends Organ {
     super.die();
     this.neurons.forEach(n => n.die());
     console.log(
-      // 'die: '
+      'die: '
     );
 
   }
@@ -153,6 +155,7 @@ export class Creature extends Organ {
       base: rand0to1_F(),
       leaking: random(0.1, 0.2),
       threshold: random(0.3, 1.5),
+      isInput:true
     });
 
     const movementNeuron = new Neuron({

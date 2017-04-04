@@ -48,6 +48,7 @@ class World extends React.Component {
           width={width}
           height={height}
           onAnimate={this._onAnimate}
+          clearColor={0x000}
         >
           <module
             ref="mouseInput"
@@ -55,6 +56,7 @@ class World extends React.Component {
           />
           <scene
             ref="scene"
+
           >
             <perspectiveCamera
               ref="camera"
