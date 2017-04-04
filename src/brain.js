@@ -157,6 +157,13 @@ export class Creature extends Organ {
       threshold: random(0.3, 1.5),
       isInput:true
     });
+    this.posYInputNeuron = new Neuron({
+      name: name + '_posYInput',
+      base: rand0to1_F(),
+      leaking: random(0.1, 0.2),
+      threshold: random(0.3, 1.5),
+      isInput:true
+    });
 
     const movementNeuron = new Neuron({
       name: name + '_movementNeuron',
@@ -166,8 +173,11 @@ export class Creature extends Organ {
       cb: this.moveup.bind(this)
     });
 
-    this.brain = new Brain(name, [movementNeuron, this.timeInputNeuron]);
+    this.brain = new Brain(name, [movementNeuron, this.timeInputNeuron, this.posYInputNeuron]);
 
+  }
+  pulse(){
+    this.posYInputNeuron.charge(activation(this.position[1]+14)) //-14 is starting position
   }
 
   updateTime (frame) {
