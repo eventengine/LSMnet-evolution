@@ -3,10 +3,10 @@ const range = require('lodash/range');
 // const sum = require('lodash/sum');
 const random = require('lodash/random');
 
-// const activation = require('sigmoid');
-import { extendObservable } from 'mobx';
+const activation = require('sigmoid');
+const { extendObservable } = require('mobx');
 
-import { rand0to1_F/*, toss, randMin1to1_F */} from './utils'
+const { rand0to1_F, toss, /* randMin1to1_F */ } = require('./utils')
 
 class Organ {
   constructor () {
@@ -20,6 +20,9 @@ class Organ {
     clearInterval(this.lifePulse)
   }
 }
+
+const minPower = 0.1;
+
 
 class Neuron extends Organ {
   constructor ({ base, name, threshold, leaking, cb, isInput }) {
@@ -36,21 +39,22 @@ class Neuron extends Organ {
     this.isInput = isInput;
     this.isOutput = !!cb;
 
-    extendObservable(this, { state: base, power: Neuron.minPower * 2 });
+    extendObservable(this, { state: base, power: minPower * 2 });
 
   }
 
-  static minPower = 0.1;
 
   charge (payload) {
-    if(this.isDead){return;}
+    if (this.isDead) {
+      return;
+    }
 
     this.power = Math.max((this.power + payload), 0);
     if (this.power > this.threshold) {
       setTimeout(() => {
         this.fire()
-      }, 10);
-      this.power = Neuron.minPower;
+      }, 200);
+      this.power = minPower;
 
     }
   }
@@ -66,33 +70,34 @@ class Neuron extends Organ {
       c.dest.charge(/*activation*/(c.strength * this.base ));
     });
     if (this.cb) {
-      this.cb();
+      this.cb(this.base);
     }
 
   }
-  die(){
+
+  die () {
     super.die();
     this.power = 0;
   }
 
   createConnection (dest, strength) {
-    // //check if not already connection
+    //check if not already connection
     // if (
-    //   toss(0.9)
+    //   toss(0.5)
     //   ||
     //   dest.connections.some(c => c.dest === this)
     // ) {
-    //   // return;
+    //   return;
     // }
     this.connections.push({ dest, strength })
   }
 }
 
 
-const numOfNeurons = 5;
+const numOfNeurons = 4;
 
 
-export default class Brain extends Organ {
+const Brain = class Brain extends Organ {
   constructor (name, specialNeurons) {
     super();
     this.name = 'Brain_' + name;
@@ -140,10 +145,11 @@ export default class Brain extends Organ {
 }
 
 
-export class Creature extends Organ {
+const Creature = class Creature extends Organ {
   constructor ({ name, inputs, outputs, startPosition }) {
     super();
     this.name = 'Creature_' + name;
+    this.generation = 0;
 
 
     extendObservable(this, {
@@ -155,14 +161,14 @@ export class Creature extends Organ {
       base: rand0to1_F(),
       leaking: random(0.1, 0.2),
       threshold: random(0.3, 1.5),
-      isInput:true
+      isInput: true
     });
     this.posYInputNeuron = new Neuron({
       name: name + '_posYInput',
       base: rand0to1_F(),
       leaking: random(0.1, 0.2),
       threshold: random(0.3, 1.5),
-      isInput:true
+      isInput: true
     });
 
     const movementNeuron = new Neuron({
@@ -176,20 +182,27 @@ export class Creature extends Organ {
     this.brain = new Brain(name, [movementNeuron, this.timeInputNeuron, this.posYInputNeuron]);
 
   }
-  pulse(){
-    this.posYInputNeuron.charge(activation(this.position[1]+14)) //-14 is starting position
+
+  pulse () {
+    this.posYInputNeuron.charge(activation(this.position[1] + 14)) //-14 is starting position
   }
 
   updateTime (frame) {
-    if(this.isDead) {return;}
+    if (this.isDead) {
+      return;
+    }
     this.timeInputNeuron.charge(0.8);
     // if(frame === 1000){ this.brain.die(); }
   }
-  die(){
+
+  die () {
     this.brain.die();
   }
 
   moveup (strength) {
-    this.position[1] += strength*0.3;
+    this.position[1] += strength * 0.3;
   }
-}
+};
+module.exports = Brain;
+module.exports.Creature = Creature;
+
