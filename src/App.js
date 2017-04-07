@@ -5,15 +5,19 @@ import './App.css';
 import BrainComp from './Visual/BrainComp';
 import CreatureComp from './Visual/CreatureComp';
 import World from './Visual/World';
-import { Creature } from './brain';
+import { firstGenCreature } from './brain';
 import { rangeNum } from './utils';
 const range = require('lodash/range');
 const slice = require('lodash/slice');
+const sortBy = require('lodash/sortBy');
 
-const creatures = range(12).map(i => {
+// console.time('a')
+const numOfCreatures = 12;
+const creatures = range(numOfCreatures).map(i => {
   const xpos = rangeNum(i, 0, 10, -14, 14);
-  return new Creature({ name: `c${i}`, startPosition: [xpos, -14] });
+  return firstGenCreature({ /*name: `c${i}`,*/ startPosition: [xpos, -14] });
 });
+console.log(creatures);
 
 class App extends Component {
   constructor () {
@@ -39,22 +43,30 @@ class App extends Component {
     if(this.end){return;}
     const {creatures} = this.state;
 
-    if(frameNum % 5000 === 0){
+    if(frameNum % 500 === 0){
       this.end = true;
-      creatures.forEach(c =>{
-        c.die();
-      });
+
 
       console.log('finish generation 1');
 
       const sortedCreatures = sortBy(creatures, c => Math.abs(c.position[1] - App.yDestination));
 
       const bestCreatures = slice(sortedCreatures, 0, 3);
-      console.log(bestCreatures);
 
+      console.log(bestCreatures);
+      const newCreature  = bestCreatures[0].evolute();
+      this.setState({ creatures: [], selectedCreature: false }, ()=>{
+        this.setState({creatures: [newCreature], selectedCreature: this.state.creatures[0]});
+        this.end = false;
+      });
+
+      creatures.forEach(c =>{
+        c.die();
+      });
+      return;
 
     }
-    if (frameNum % 1 === 0) {
+    if (frameNum % 100 === 0) {
       creatures.forEach(c => {
         c.updateTime(frameNum);
       });
@@ -72,7 +84,7 @@ class App extends Component {
       return <CreatureComp
         selected={c === this.state.selectedCreature}
         creature={c}
-        key={c.name}
+        key={c.heritageId}
         i={i}
         handleClick={this.handleCreatureClick}
       />;
