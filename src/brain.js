@@ -262,42 +262,37 @@ const Creature = class Creature extends Organ {
     return newCreature;
   }
 };
+
 function firstGenCreature({startPosition}){
   const heritageId = Creature.getRandomHeritageId();
+  function generateRandNeuron (name, type) {
+    return new Neuron({
+      name,
+      type,
+      base: rand0to1_F(),
+      leaking: random(0.1, 0.2),
+      threshold: random(0.3, 0.8),
+    });
 
-  const timeInputNeuron = new Neuron({
-    name: heritageId + '_timeInput',
-    type: Neuron.TYPES.TIME_INPUT,
-    base: rand0to1_F(),
-    leaking: random(0.1, 0.2),
-    threshold: random(0.3, 1.5),
-  });
-  const posYInputNeuron = new Neuron({
-    name: heritageId + '_posYInput',
-    type: Neuron.TYPES.POS_Y_INPUT,
-    base: rand0to1_F(),
-    leaking: random(0.1, 0.2),
-    threshold: random(0.3, 1.5),
-  });
+  }
 
-  const movementNeuron = new Neuron({
-    name: heritageId + '_movementNeuron',
-    type: Neuron.TYPES.MOVEMENT_OUTPUT,
-    base: rand0to1_F(),
-    leaking: random(0.001, 0.2),
-    threshold: random(0.3, 1.5),
-  });
+  const timeInputNeuron = generateRandNeuron(
+    heritageId + '_timeInput',
+    Neuron.TYPES.TIME_INPUT,
+  );
+  const posYInputNeuron = generateRandNeuron(
+    heritageId + '_posYInput',
+    Neuron.TYPES.POS_Y_INPUT,
+  );
+
+  const movementNeuron = generateRandNeuron(
+    heritageId + '_movementNeuron',
+    Neuron.TYPES.MOVEMENT_OUTPUT,
+  );
 
   const neurons =
-    range(numOfNeurons)
-      .map(i => new Neuron({
-        name: `${heritageId}_${i.toString()}`,
-        base: rand0to1_F(),
-        leaking: random(0.001, 0.02),
-        threshold: random(0.3, 1.2)
-      }))
+    range(numOfNeurons).map(i => generateRandNeuron(`${heritageId}_${i.toString()}`, Neuron.TYPES.REGULAR))
       .concat([movementNeuron, timeInputNeuron, posYInputNeuron]);
-  // const neurons = normalNeurons.concat(specialNeurons);
 
 
   neurons.forEach(n => {
