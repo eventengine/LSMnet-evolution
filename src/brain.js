@@ -37,22 +37,12 @@ function multiply99or101 (num) {
 }
 
 class Neuron extends Organ {
-  constructor ({ base, name, threshold, leaking, cb,/* isInput,*/ type }) {
+  constructor ({ base, name, threshold, leaking, type }) {
     super();
-
     this.name = 'Neuron_' + name;
-    this.base = base;
     this.connections = [];
-    // this.payloads = [];
-    this.threshold = threshold;
-    this.leaking = leaking;
-    this.cb = cb;
-    // this.isOutput = !!cb;
-    this.type = type || Neuron.TYPES.REGULAR;
-    // this.isInput = Neuron.TYPES;
-
+    Object.assign(this, {base, threshold, leaking, type});
     extendObservable(this, { state: base, power: minPower * 2 });
-
   }
 
   modify(){
@@ -74,11 +64,10 @@ class Neuron extends Organ {
     return this.isOfKindByTypeStringEnd('INPUT')
   }
   get isOutput(){
-    // return !!this.cb;
     return this.isOfKindByTypeStringEnd('OUTPUT')
   }
   isOfKindByTypeStringEnd(typeEnd){
-    return Object.keys(Neuron.TYPES)
+    return !!Object.keys(Neuron.TYPES)
       .filter(k => k.endsWith(typeEnd))
       .find(inputKey => this.type === Neuron.TYPES[inputKey]);
   }
@@ -112,7 +101,6 @@ class Neuron extends Organ {
     });
     if (this.isOutput) {
       this.brain.creature.outputFire(this.type, this.base);
-      // this.cb(this.brain.creature, this.base);
     }
 
   }
@@ -143,12 +131,10 @@ const Brain = class Brain extends Organ {
   constructor ({ heritageId, neurons}) {
     super();
     this.name = 'Brain_' + heritageId;
-    // const [movementNeuron, timeInputNeuron, posYInputNeuron] = specialNeurons;
 
     this.timeInputNeuron = neurons.find(n => n.type === Neuron.TYPES.TIME_INPUT);
     this.posYInputNeuron = neurons.find(n => n.type === Neuron.TYPES.POS_Y_INPUT);
 
-    // this.neurons = normalNeurons.concat(specialNeurons);
     this.neurons = neurons.map(n => {n.brain = this; return n;})
   }
 
@@ -173,10 +159,8 @@ const Creature = class Creature extends Organ {
     super();
     // this.evolutionPower = rand0to1_F();
     this.age = 0;
-    this.startPosition = startPosition;
-    this.heritageId = heritageId;
+    Object.assign(this, {startPosition, heritageId, brain});
     this.name = 'Creature_' + this.heritageId;
-    this.brain = brain;
     this.brain.creature = this;
 
     extendObservable(this, {
@@ -316,7 +300,6 @@ function firstGenCreature({startPosition}){
   })
 }
 
-// module.exports = Brain;
 module.exports.Creature = Creature;
 module.exports.firstGenCreature = firstGenCreature;
 
