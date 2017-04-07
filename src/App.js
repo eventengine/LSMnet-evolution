@@ -63,7 +63,7 @@ class App extends Component {
 
   handleCreatureClick (i) {
     this.setState({ selectedCreature: false }, ()=>{
-      this.setState({ selectedCreature: creatures[i]})
+      this.setState({ selectedCreature: this.state.creatures[i]})
     })
   }
 
