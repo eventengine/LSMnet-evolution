@@ -140,16 +140,16 @@ const numOfNeurons = 4;
 
 
 const Brain = class Brain extends Organ {
-  constructor ({ heritageId, specialNeurons, normalNeurons}) {
+  constructor ({ heritageId, neurons}) {
     super();
     this.name = 'Brain_' + heritageId;
-    const [movementNeuron, timeInputNeuron, posYInputNeuron] = specialNeurons;
+    // const [movementNeuron, timeInputNeuron, posYInputNeuron] = specialNeurons;
 
-    this.timeInputNeuron = timeInputNeuron;
-    this.posYInputNeuron = posYInputNeuron;
+    this.timeInputNeuron = neurons.find(n => n.type === Neuron.TYPES.TIME_INPUT);
+    this.posYInputNeuron = neurons.find(n => n.type === Neuron.TYPES.POS_Y_INPUT);
 
-    this.neurons = normalNeurons.concat(specialNeurons);
-    this.neurons = this.neurons.map(n => {n.brain = this; return n;})
+    // this.neurons = normalNeurons.concat(specialNeurons);
+    this.neurons = neurons.map(n => {n.brain = this; return n;})
   }
 
   die () {
@@ -286,19 +286,18 @@ function firstGenCreature({startPosition}){
     base: rand0to1_F(),
     leaking: random(0.001, 0.2),
     threshold: random(0.3, 1.5),
-    // cb: this.moveup.bind(this)
   });
 
-  const specialNeurons = [movementNeuron, timeInputNeuron, posYInputNeuron];
-  const normalNeurons =
+  const neurons =
     range(numOfNeurons)
       .map(i => new Neuron({
         name: `${heritageId}_${i.toString()}`,
         base: rand0to1_F(),
         leaking: random(0.001, 0.02),
         threshold: random(0.3, 1.2)
-      }));
-  const neurons = normalNeurons.concat(specialNeurons);
+      }))
+      .concat([movementNeuron, timeInputNeuron, posYInputNeuron]);
+  // const neurons = normalNeurons.concat(specialNeurons);
 
 
   neurons.forEach(n => {
@@ -311,8 +310,7 @@ function firstGenCreature({startPosition}){
 
   const brain = new Brain({
     heritageId,
-    normalNeurons,
-    specialNeurons
+    neurons
   });
 
 
