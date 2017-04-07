@@ -37,12 +37,16 @@ function multiply99or101 (num) {
 }
 
 class Neuron extends Organ {
-  constructor ({ base, name, threshold, leaking, type }) {
+  constructor ({ base, threshold, leaking, type }) {
     super();
-    this.name = 'Neuron_' + name;
     this.connections = [];
     Object.assign(this, {base, threshold, leaking, type});
     extendObservable(this, { state: base, power: minPower * 2 });
+  }
+  get name(){
+    if(this.brain && this.brain.creature && typeof this.index !== 'undefined'){
+      return `Neuron_${this.index}_${this.brain.creature.heritageId}`;
+    }
   }
 
   modify(){
@@ -128,14 +132,16 @@ const numOfNeurons = 4;
 
 
 const Brain = class Brain extends Organ {
-  constructor ({ heritageId, neurons}) {
+  constructor ({neurons}) {
     super();
-    this.name = 'Brain_' + heritageId;
 
     this.timeInputNeuron = neurons.find(n => n.type === Neuron.TYPES.TIME_INPUT);
     this.posYInputNeuron = neurons.find(n => n.type === Neuron.TYPES.POS_Y_INPUT);
 
-    this.neurons = neurons.map(n => {n.brain = this; return n;})
+    this.neurons = neurons.map((n,i) => {n.brain = this; n.index = i; return n;})
+  }
+  get name(){
+    if(this.creature){ return 'Brain_' + this.creature.heritageId;}
   }
 
   die () {
@@ -155,12 +161,11 @@ const Brain = class Brain extends Organ {
 
 
 const Creature = class Creature extends Organ {
-  constructor ({ /*name,*/ heritageId, brain, startPosition }) {
+  constructor ({ heritageId, brain, startPosition }) {
     super();
     // this.evolutionPower = rand0to1_F();
     this.age = 0;
     Object.assign(this, {startPosition, heritageId, brain});
-    this.name = 'Creature_' + this.heritageId;
     this.brain.creature = this;
 
     extendObservable(this, {
@@ -169,6 +174,7 @@ const Creature = class Creature extends Organ {
 
     // this.getPhenotype();
   }
+  get name(){return 'Creature_' + this.heritageId;}
 
   pulse () {
     this.brain.posYInputNeuron.charge(activation(this.position[1] + 14)) //-14 is starting position
@@ -234,6 +240,12 @@ const Creature = class Creature extends Organ {
   }
 
   evolute(){
+
+    return new Creature({
+      heritageId: `${this.heritageId}.${Creature.getRandomHeritageId()}`,
+      brain: new Brain({}),
+      startPosition: this.startPosition
+    });
     const newCreature = this.clone();
     newCreature.heritageId = `${this.heritageId}.${Creature.getRandomHeritageId()}`;
     // const fatherGenotype = this.getPhenotype();
@@ -249,9 +261,8 @@ const Creature = class Creature extends Organ {
 
 function firstGenCreature({startPosition}){
   const heritageId = Creature.getRandomHeritageId();
-  function generateRandNeuron (name, type) {
+  function generateRandNeuron (type) {
     return new Neuron({
-      name,
       type,
       base: rand0to1_F(),
       leaking: random(0.1, 0.2),
@@ -260,22 +271,13 @@ function firstGenCreature({startPosition}){
 
   }
 
-  const timeInputNeuron = generateRandNeuron(
-    heritageId + '_timeInput',
-    Neuron.TYPES.TIME_INPUT,
-  );
-  const posYInputNeuron = generateRandNeuron(
-    heritageId + '_posYInput',
-    Neuron.TYPES.POS_Y_INPUT,
-  );
+  const timeInputNeuron = generateRandNeuron(Neuron.TYPES.TIME_INPUT);
+  const posYInputNeuron = generateRandNeuron(Neuron.TYPES.POS_Y_INPUT);
 
-  const movementNeuron = generateRandNeuron(
-    heritageId + '_movementNeuron',
-    Neuron.TYPES.MOVEMENT_OUTPUT,
-  );
+  const movementNeuron = generateRandNeuron(Neuron.TYPES.MOVEMENT_OUTPUT);
 
   const neurons =
-    range(numOfNeurons).map(i => generateRandNeuron(`${heritageId}_${i.toString()}`, Neuron.TYPES.REGULAR))
+    range(numOfNeurons).map(i => generateRandNeuron(Neuron.TYPES.REGULAR))
       .concat([movementNeuron, timeInputNeuron, posYInputNeuron]);
 
 
@@ -287,10 +289,7 @@ function firstGenCreature({startPosition}){
     })
   });
 
-  const brain = new Brain({
-    heritageId,
-    neurons
-  });
+  const brain = new Brain({ neurons });
 
 
   return new Creature({
