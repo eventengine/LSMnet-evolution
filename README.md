@@ -1,3 +1,18 @@
+READTHEM
+
+Compositional Pattern Producing Networks:
+A Novel Abstraction of Development [CPPN]
+http://eplex.cs.ucf.edu/papers/stanley_gpem07.pdf
+
+A Hypercube-Based Encoding for Evolving Large-Scale Neural Networks
+http://axon.cs.byu.edu/~dan/778/papers/NeuroEvolution/stanley3**.pdf
+
+
+Liquid State Machines: Motivation, Theory, and Applications
+http://www.igi.tugraz.at/psfiles/189.pdf
+
+https://brage.bibsys.no/xmlui/bitstream/handle/11250/253261/655600_FULLTEXT01.pdf?sequence=1
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
@@ -1516,17 +1531,17 @@ When you build the project, Create React App will place the `public` folder cont
 2. Install `serve` by running `npm install --save serve`.
 
 3. Add this line to `scripts` in `package.json`:
-    
+
     ```
     "now-start": "serve build/",
     ```
-    
+
 4. Run `now` from your project directory. You will see a **now.sh** URL in your output like this:
-    
+
     ```
     > Ready! https://your-project-dirname-tpspyhtdtk.now.sh (copied to clipboard)
     ```
-    
+
     Paste that URL into your browser when the build is complete, and you will see your deployed app.
 
 Details are available in [this article.](https://zeit.co/blog/now-static)
