@@ -46,13 +46,8 @@ class App extends Component {
       });
 
       console.log('finish generation 1');
-      const sortedCreatures = creatures.sort((a,b) => {
-        // a.die();
-        if(
-          Math.abs(b.position[1] - App.yDestination) < Math.abs(a.position[1] - App.yDestination)
-        ){ return 1 }
-        return -1
-      });
+
+      const sortedCreatures = sortBy(creatures, c => Math.abs(c.position[1] - App.yDestination));
 
       const bestCreatures = slice(sortedCreatures, 0, 3);
       console.log(bestCreatures);
