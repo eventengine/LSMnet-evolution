@@ -16,9 +16,14 @@ function rangeNum(num, in_min, in_max, out_min, out_max) {
   return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
+function randInt (to, from = 0) {
+  return random(from, to, false)
+}
+
 module.exports = {
   rand0to1_F,
   toss,
   randMin1to1_F,
-  rangeNum
+  rangeNum,
+  randInt
 };

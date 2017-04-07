@@ -151,6 +151,7 @@ const Creature = class Creature extends Organ {
     this.name = 'Creature_' + name;
     this.generation = 0;
 
+    this.heritageId = heritageId;
 
     extendObservable(this, {
       position: startPosition
@@ -201,6 +202,15 @@ const Creature = class Creature extends Organ {
 
   moveup (strength) {
     this.position[1] += strength * 0.3;
+  }
+
+
+  static getRandomHeritageId(){
+    return String(randInt(100000,100))
+  }
+
+  get generation(){
+    return this.heritageId.split('.').length;
   }
 };
 module.exports = Brain;
