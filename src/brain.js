@@ -185,7 +185,8 @@ const Creature = class Creature extends Organ {
       // evaluate(this.neurons)
     );
     this.age++;
-    if (this.age === 20) {
+    if (this.age > 15) {
+      console.log('www');
       this.die();
     }
   }
@@ -205,7 +206,7 @@ const Creature = class Creature extends Organ {
   }
 
   moveup (strength) {
-    this.position[1] += strength * 0.3;
+    this.position[1] += strength * 0.01;
   }
 
   outputFire(type, power){

@@ -37,7 +37,7 @@ class App extends Component {
       c.updateTime();
     });
   }
-  static yDestination = 10;
+  static yDestination = 10000;
 
   updateFrame (frameNum) {
     if(this.end){return;}
@@ -54,6 +54,7 @@ class App extends Component {
       // });
 
       function evaluateFunc(c){
+        // return (-1 * c.position[1])
         return Math.abs(c.position[1] - App.yDestination)
       }
       const sortedCreatures = sortBy(creatures, evaluateFunc);
