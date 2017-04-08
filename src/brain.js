@@ -36,7 +36,7 @@ class Neuron extends Organ {
     super();
     this.connections = [];
     Object.assign(this, {base, threshold, leaking, type});
-    extendObservable(this, { state: base, power: minPower * 2 });
+    extendObservable(this, { power: minPower * 2 });
   }
   get name(){
     if(this.brain && this.brain.creature && typeof this.index !== 'undefined'){
@@ -56,12 +56,6 @@ class Neuron extends Organ {
     });
   }
 
-  static TYPES = {
-    REGULAR: Symbol('REGULAR'),
-    TIME_INPUT: Symbol('TIME_INPUT'),
-    POS_Y_INPUT: Symbol('POS_Y_INPUT'),
-    MOVEMENT_OUTPUT: Symbol('MOVEMENT_OUTPUT')
-  };
 
   get isInput(){
     return this.isOfKindByTypeStringEnd('INPUT')
@@ -126,6 +120,13 @@ class Neuron extends Organ {
   }
 }
 
+Neuron.TYPES = {
+  REGULAR: Symbol('REGULAR'),
+  TIME_INPUT: Symbol('TIME_INPUT'),
+  POS_Y_INPUT: Symbol('POS_Y_INPUT'),
+  MOVEMENT_OUTPUT: Symbol('MOVEMENT_OUTPUT')
+};
+
 
 const numOfNeurons = 4;
 
@@ -180,7 +181,7 @@ const Creature = class Creature extends Organ {
     this.brain.posYInputNeuron.charge(activation(this.position[1] + 14)) //-14 is starting position
 
     console.log(
-      // 'pulse', this.age
+      'pulse', this.age
       // evaluate(this.neurons)
     );
     this.age++;
@@ -190,6 +191,7 @@ const Creature = class Creature extends Organ {
   }
 
   updateTime (frame) {
+    // console.log('updateTime');
     if (this.isDead) {
       return;
     }
@@ -299,6 +301,7 @@ function firstGenCreature({xpos, startYPosition}){
     startYPosition, xpos
   })
 }
+
 
 module.exports.Creature = Creature;
 module.exports.firstGenCreature = firstGenCreature;
