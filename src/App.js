@@ -43,20 +43,24 @@ class App extends Component {
     if(this.end){return;}
     const {creatures} = this.state;
 
-    if(frameNum % 500 === 0){
+    // if(frameNum % 500 === 0){
+    if(creatures.every(c=>c.isDead)){
       this.end = true;
 
 
       // console.log('finish generation');
-      creatures.forEach(c =>{
-        c.die();
-      });
+      // creatures.forEach(c =>{
+      //   c.die();
+      // });
 
-      const sortedCreatures = sortBy(creatures, c => Math.abs(c.position[1] - App.yDestination));
-      const overalScore = creatures.reduce((p, c) => {
-        return p + Math.abs(c.position[1] - App.yDestination)
+      function evaluateFunc(c){
+        return Math.abs(c.position[1] - App.yDestination)
+      }
+      const sortedCreatures = sortBy(creatures, evaluateFunc);
+      const averageScore = creatures.reduce((p, c) => {
+        return p + evaluateFunc(c)
       },0) / creatures.length;
-      console.log(overalScore);
+      console.log('averageScore: ', averageScore, 'best: ', evaluateFunc(sortedCreatures[0]));
 
       const bestCreatures = slice(sortedCreatures, 0, 20);
 

@@ -181,12 +181,12 @@ const Creature = class Creature extends Organ {
     this.brain.posYInputNeuron.charge(activation(this.position[1] + 14)) //-14 is starting position
 
     console.log(
-      'pulse', this.age
+      // 'pulse', this.age
       // evaluate(this.neurons)
     );
     this.age++;
-    if (this.age === 100) {
-      // this.die();
+    if (this.age === 20) {
+      this.die();
     }
   }
 
