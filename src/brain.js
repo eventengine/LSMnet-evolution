@@ -6,7 +6,7 @@ const random = require('lodash/random');
 const activation = require('sigmoid');
 const { extendObservable } = require('mobx');
 
-const { rangeNum, rand0to1_F, randInt, toss, /* randMin1to1_F */ } = require('./utils')
+const { /*rangeNum,*/ rand0to1_F, randInt, toss, /* randMin1to1_F */ } = require('./utils')
 
 class Organ {
   constructor () {
@@ -18,14 +18,6 @@ class Organ {
   die () {
     this.isDead = true;
     clearInterval(this.lifePulse)
-  }
-
-  clone(){
-    this.isDead = false;
-    if (this.pulse) {
-      this.lifePulse = setInterval(this.pulse.bind(this), 500);
-    }
-    return Object.assign(Object.create(this), this);
   }
 }
 
@@ -62,11 +54,6 @@ class Neuron extends Organ {
       base: modifyProp(this.base, this.brain.creature.evolutionPower),
       leaking: modifyProp(this.leaking, this.brain.creature.evolutionPower)
     });
-    // const newNeuron = this.clone();
-    // newNeuron.threshold = multiply99or101(this.threshold);
-    // newNeuron.base = multiply99or101(this.base);
-    // newNeuron.leaking = multiply99or101(this.leaking);
-    // return newNeuron;
   }
 
   static TYPES = {
