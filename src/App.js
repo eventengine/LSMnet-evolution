@@ -20,12 +20,24 @@ const creatures = [] || range(numOfCreatures).map(i => {
 console.log(creatures);
 
 import bw_script from './brain-worker';
-var myWorker = new Worker(bw_script);
 
-myWorker.onmessage = (m) => {
-  console.log("msg from worker: ", m.data);
+// var bw_script = require("worker-loader!./brain-worker.js"); //eslint-disable-line
+// var bw_script = require("worker-loader?inline!./brain-worker.js");
+console.log(bw_script);
+var myWorker = new Worker(bw_script);
+console.log(process.title);
+myWorker.onmessage = (type, payload) => {
+  console.log(type, payload);
 };
-myWorker.postMessage('im from main');
+const {createWorkerScript} = require( './utils');
+import b from './brain';
+const workercode = () => {
+  b
+}
+// const x = createWorkerScript(workercode);
+
+myWorker.postMessage({type: 'ADD_DEPENDENCIES', payload: firstGenCreature.toString()});
+myWorker.postMessage({type: 'CREATE', payload: {xpos: 10, startYPosition: -14}});
 
 
 console.log(myWorker);
