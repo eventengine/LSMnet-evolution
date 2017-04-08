@@ -6,7 +6,7 @@ const random = require('lodash/random');
 const activation = require('sigmoid');
 const { extendObservable } = require('mobx');
 
-const { rand0to1_F, randInt, toss, /* randMin1to1_F */ } = require('./utils')
+const { rangeNum, rand0to1_F, randInt, toss, /* randMin1to1_F */ } = require('./utils')
 
 class Organ {
   constructor () {
@@ -35,6 +35,9 @@ function multiply99or101 (num) {
   const by = toss() ? 0.99 : 1.01;
   return num * by;
 }
+function modifyProp (propWeight, evolutionPower) {
+  return toss(evolutionPower) ? multiply99or101(propWeight) : propWeight;
+}
 
 class Neuron extends Organ {
   constructor ({ base, threshold, leaking, type }) {
@@ -48,13 +51,22 @@ class Neuron extends Organ {
       return `Neuron_${this.index}_${this.brain.creature.heritageId}`;
     }
   }
+  getConnectionMatrix(){
+    return this.connections.map(c => c.strength);
+  }
 
-  modify(){
-    const newNeuron = this.clone();
-    newNeuron.threshold = multiply99or101(this.threshold);
-    newNeuron.base = multiply99or101(this.base);
-    newNeuron.leaking = multiply99or101(this.leaking);
-    return newNeuron;
+  evoluteUnConnected(){
+    return new Neuron({
+      type: this.type,
+      threshold: modifyProp(this.threshold, this.brain.creature.evolutionPower),
+      base: modifyProp(this.base, this.brain.creature.evolutionPower),
+      leaking: modifyProp(this.leaking, this.brain.creature.evolutionPower)
+    });
+    // const newNeuron = this.clone();
+    // newNeuron.threshold = multiply99or101(this.threshold);
+    // newNeuron.base = multiply99or101(this.base);
+    // newNeuron.leaking = multiply99or101(this.leaking);
+    // return newNeuron;
   }
 
   static TYPES = {
@@ -144,12 +156,13 @@ const Brain = class Brain extends Organ {
     if(this.creature){ return 'Brain_' + this.creature.heritageId;}
   }
 
+  getNeuronsConnectionMatrices(){
+    return this.neurons.map(n => n.getConnectionMatrix());
+  }
+
   die () {
     this.neurons.forEach(n => n.die());
-    console.log(
-      'die: '
-    );
-
+    // console.log('die: ');
   }
 
   pulse () {
@@ -161,15 +174,15 @@ const Brain = class Brain extends Organ {
 
 
 const Creature = class Creature extends Organ {
-  constructor ({ heritageId, brain, startPosition }) {
+  constructor ({ heritageId, brain, startYPosition, xpos }) {
     super();
-    // this.evolutionPower = rand0to1_F();
+    this.evolutionPower = 0.2;//rand0to1_F();
     this.age = 0;
-    Object.assign(this, {startPosition, heritageId, brain});
+    Object.assign(this, {startYPosition, heritageId, brain});
     this.brain.creature = this;
 
     extendObservable(this, {
-      position: startPosition
+      position: [xpos, startYPosition]
     });
 
     // this.getPhenotype();
@@ -190,9 +203,6 @@ const Creature = class Creature extends Organ {
   }
 
   updateTime (frame) {
-    if(this.generation > 1){
-      console.log(this);
-    }
     if (this.isDead) {
       return;
     }
@@ -206,9 +216,6 @@ const Creature = class Creature extends Organ {
   }
 
   moveup (strength) {
-    if(this.generation > 1){
-      console.log(this);
-    }
     this.position[1] += strength * 0.3;
   }
 
@@ -239,27 +246,34 @@ const Creature = class Creature extends Organ {
     return this.heritageId.split('.').length;
   }
 
-  evolute(){
+  evolute(xpos){
+    const neurons = this.brain.neurons.map(n => n.evoluteUnConnected());
+    const connectionMatrices = this.brain.getNeuronsConnectionMatrices();
+
+    neurons.forEach((n,i) => {
+      neurons.forEach((cn,j) => {
+        // if (n !== cn) {
+        n.createConnection(
+          cn,
+          modifyProp(connectionMatrices[i][j], this.evolutionPower)
+        );
+        // }
+      })
+    });
+
+    const brain = new Brain({neurons});
+
 
     return new Creature({
+      brain,
       heritageId: `${this.heritageId}.${Creature.getRandomHeritageId()}`,
-      brain: new Brain({}),
-      startPosition: this.startPosition
+      startYPosition: this.startYPosition,
+      xpos
     });
-    const newCreature = this.clone();
-    newCreature.heritageId = `${this.heritageId}.${Creature.getRandomHeritageId()}`;
-    // const fatherGenotype = this.getPhenotype();
-    newCreature.age = 0;
-    newCreature.position = this.startPosition;
-    newCreature.brain = this.brain.clone();
-    newCreature.brain.neurons = this.brain.neurons.map(n => n.modify());
-    newCreature.timeInputNeuron = newCreature.brain.neurons[1];
-    newCreature.posYInputNeuron = newCreature.brain.neurons[2];
-    return newCreature;
   }
 };
 
-function firstGenCreature({startPosition}){
+function firstGenCreature({xpos, startYPosition}){
   const heritageId = Creature.getRandomHeritageId();
   function generateRandNeuron (type) {
     return new Neuron({
@@ -295,7 +309,7 @@ function firstGenCreature({startPosition}){
   return new Creature({
     brain,
     heritageId,
-    startPosition
+    startYPosition, xpos
   })
 }
 

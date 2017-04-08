@@ -5,7 +5,7 @@ function rand0to1_F () {
   return random(0, 1, true)
 }
 function toss(rate = 0.5){
-  return rand0to1_F() > rate;
+  return rand0to1_F() < rate;
 
 }
 function randMin1to1_F () {

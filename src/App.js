@@ -12,10 +12,10 @@ const slice = require('lodash/slice');
 const sortBy = require('lodash/sortBy');
 
 // console.time('a')
-const numOfCreatures = 12;
+const numOfCreatures = 60;
 const creatures = range(numOfCreatures).map(i => {
-  const xpos = rangeNum(i, 0, 10, -14, 14);
-  return firstGenCreature({ /*name: `c${i}`,*/ startPosition: [xpos, -14] });
+  const xpos = rangeNum(i, 0, numOfCreatures, -20, 20);
+  return firstGenCreature({ /*name: `c${i}`,*/ xpos, startYPosition: -14 });
 });
 console.log(creatures);
 
@@ -47,26 +47,33 @@ class App extends Component {
       this.end = true;
 
 
-      console.log('finish generation 1');
-
-      const sortedCreatures = sortBy(creatures, c => Math.abs(c.position[1] - App.yDestination));
-
-      const bestCreatures = slice(sortedCreatures, 0, 3);
-
-      console.log(bestCreatures);
-      const newCreature  = bestCreatures[0].evolute();
-      this.setState({ creatures: [], selectedCreature: false }, ()=>{
-        this.setState({creatures: [newCreature], selectedCreature: this.state.creatures[0]});
-        this.end = false;
-      });
-
+      // console.log('finish generation');
       creatures.forEach(c =>{
         c.die();
       });
-      return;
 
+      const sortedCreatures = sortBy(creatures, c => Math.abs(c.position[1] - App.yDestination));
+      const overalScore = creatures.reduce((p, c) => {
+        return p + Math.abs(c.position[1] - App.yDestination)
+      },0) / creatures.length;
+      console.log(overalScore);
+
+      const bestCreatures = slice(sortedCreatures, 0, 20);
+
+      const nextGenCreatures = []
+        .concat(bestCreatures, bestCreatures, bestCreatures)
+        .map((c, i) => c.evolute(rangeNum(i, 0, numOfCreatures, -20, 20)));
+
+      setTimeout(()=>{
+        this.setState({ creatures: [], selectedCreature: false }, ()=>{
+          this.setState({ creatures: nextGenCreatures, selectedCreature: nextGenCreatures[0] }, () => {
+            this.end = false
+          });
+        });
+      },3000);
+      return;
     }
-    if (frameNum % 100 === 0) {
+    if (frameNum % 2 === 0) {
       creatures.forEach(c => {
         c.updateTime(frameNum);
       });
