@@ -1,4 +1,4 @@
-import {createWorkerScript} from './utils'
+const {createWorkerScript} = require( './utils');
 const workercode = () => {
 
   self.onmessage = function(e) {

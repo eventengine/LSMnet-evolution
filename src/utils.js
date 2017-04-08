@@ -21,11 +21,18 @@ function randInt (to, from = 0) {
 }
 
 function createWorkerScript(workercode){
-  let code = workercode.toString();
-  code = code.substring(code.indexOf("{")+1, code.lastIndexOf("}"));
+  if(process.title === 'browser'){
+    let code = workercode.toString();
+    code = code.substring(code.indexOf("{")+1, code.lastIndexOf("}"));
 
-  const blob = new Blob([code], {type: "application/javascript"});
-  return URL.createObjectURL(blob);
+    const blob = new Blob([code], {type: "application/javascript"});
+    return URL.createObjectURL(blob);
+  } else if (process.title === 'node'){
+    return workercode
+  } else {
+    throw new Error('problem creating worker. check environment')
+  }
+
 }
 
 module.exports = {
