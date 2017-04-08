@@ -9,7 +9,8 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-three-renderer": "^3.0.2",
-    "three": "^0.82.1"
+    "three": "^0.82.1",
+    "webworker-threads": "^0.7.11"
   },
   "devDependencies": {
     "react-scripts": "0.9.5"
