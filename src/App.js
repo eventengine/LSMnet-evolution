@@ -13,11 +13,23 @@ const sortBy = require('lodash/sortBy');
 
 // console.time('a')
 const numOfCreatures = 60;
-const creatures = range(numOfCreatures).map(i => {
+const creatures = [] || range(numOfCreatures).map(i => {
   const xpos = rangeNum(i, 0, numOfCreatures, -20, 20);
   return firstGenCreature({ /*name: `c${i}`,*/ xpos, startYPosition: -14 });
 });
 console.log(creatures);
+
+import bw_script from './brain-worker';
+var myWorker = new Worker(bw_script);
+
+myWorker.onmessage = (m) => {
+  console.log("msg from worker: ", m.data);
+};
+myWorker.postMessage('im from main');
+
+
+console.log(myWorker);
+
 
 class App extends Component {
   constructor () {
@@ -45,7 +57,6 @@ class App extends Component {
 
     if(frameNum % 500 === 0){
       this.end = true;
-
 
       // console.log('finish generation');
       creatures.forEach(c =>{
@@ -124,7 +135,7 @@ class App extends Component {
         <World onAnimate={this.updateFrame}>
           {this.renderTopLine()}
           {this.renderCreatures()}
-          {this.state.selectedCreature && <BrainComp brain={this.state.selectedCreature.brain}/>}
+          {/*{this.state.selectedCreature && <BrainComp brain={this.state.selectedCreature.brain}/>}*/}
         </World>
       </div>
     );

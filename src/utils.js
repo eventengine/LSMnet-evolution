@@ -20,10 +20,19 @@ function randInt (to, from = 0) {
   return random(from, to, false)
 }
 
+function createWorkerScript(workercode){
+  let code = workercode.toString();
+  code = code.substring(code.indexOf("{")+1, code.lastIndexOf("}"));
+
+  const blob = new Blob([code], {type: "application/javascript"});
+  return URL.createObjectURL(blob);
+}
+
 module.exports = {
   rand0to1_F,
   toss,
   randMin1to1_F,
   rangeNum,
-  randInt
+  randInt,
+  createWorkerScript
 };
